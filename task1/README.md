@@ -39,7 +39,7 @@ task1/
 
 ## 数据集
 
-当前数据来自 [`boff868/2026Summer-integrated-robot-grouptask/dataset_self`](https://github.com/boff868/2026Summer-integrated-robot-grouptask/tree/main/dataset_self)，固定在源仓库提交 `d06626c71780a5c0a8283d76d09e7b90d0238680`。本项目修正 1 个舍入越界框，并将 5 个跨集合的连续拍摄序列归并到单一集合。最终划分为 train 433 张、val 75 张、test 88 张。详细来源、统计和逐项修正记录见 [`data/README.md`](data/README.md)。
+本项目修正 1 个舍入越界框，并将 5 个跨集合的连续拍摄序列归并到单一集合。最终划分为 train 433 张、val 75 张、test 88 张。详细来源、统计和逐项修正记录见 [`data/README.md`](data/README.md)。
 
 数据已按标准 YOLO Detection 格式放入：
 
