@@ -1,8 +1,7 @@
-# YOLO detection dataset. Paths are relative to this YAML file.
-path: ../data
-train: images/train
-val: images/val
-test: images/test
+# YOLO detection dataset. Split paths are relative to this YAML file.
+train: ../data/images/train
+val: ../data/images/val
+test: ../data/images/test
 
 nc: 3
 names:
