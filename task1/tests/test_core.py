@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 import cv2
 import numpy as np
@@ -17,7 +18,7 @@ sys.path.insert(0, str(SRC))
 from acceptance_test import required_class_counts, score_sample  # noqa: E402
 from check_dataset import inspect_dataset, validate_label_line  # noqa: E402
 from common import PROJECT_ROOT  # noqa: E402
-from evaluate import box_iou, match_detections  # noqa: E402
+from evaluate import box_iou, extract_per_class_metrics, match_detections  # noqa: E402
 from jetson_ros2_node import artifact_contract  # noqa: E402
 
 
@@ -56,6 +57,23 @@ class MatchingTests(unittest.TestCase):
         self.assertEqual(len(result["correct"]), 1)
         self.assertEqual(result["false_positives"], [1])
         self.assertEqual(result["false_negatives"], [])
+
+    def test_extract_per_class_metrics_includes_instance_counts(self) -> None:
+        box_metrics = SimpleNamespace(
+            ap_class_index=np.array([0, 1, 2]),
+            p=np.array([0.9, 0.8, 0.7]),
+            r=np.array([0.6, 0.5, 0.4]),
+            ap50=np.array([0.95, 0.85, 0.75]),
+            maps=np.array([0.7, 0.6, 0.5]),
+        )
+        metrics = SimpleNamespace(box=box_metrics, nt_per_class=np.array([208, 25, 102]))
+        result = extract_per_class_metrics(
+            metrics,
+            {0: "keyboard", 1: "nongfu_spring", 2: "phone"},
+        )
+        self.assertEqual(result["0"]["instances"], 208)
+        self.assertEqual(result["1"]["name"], "nongfu_spring")
+        self.assertAlmostEqual(result["2"]["mAP50-95"], 0.5)
 
     def test_wrong_class_consumes_matching_ground_truth(self) -> None:
         result = match_detections(

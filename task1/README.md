@@ -8,13 +8,17 @@
 | 项目 | 状态 |
 |---|---|
 | 三类数据集及严格审计 | 已完成并通过 |
-| YOLO26n 训练、评估和模型发布程序 | 已完成并通过 dry-run |
+| YOLO26n 训练、评估和模型发布程序 | 已完成；100 轮正式训练及独立测试集评估通过 |
 | 20 件实物验收程序 | 已完成，固定为 7 个键盘、7 个农夫山泉、6 个手机 |
-| Jetson 检测、视频记录、FPS 统计和 ROS2 发布程序 | 已完成 |
-| `models/best.pt` 与训练指标 | 未生成；本仓库尚未执行正式训练 |
+| Jetson 检测、视频记录、FPS 统计和 ROS2 发布程序 | 已完成；ROS2 实机发布已由使用者确认成功 |
+| `models/best.pt` 与训练指标 | 已生成；SHA-256 为 `7ab7a1cf4c08e2eb803d5666a6caa6931256cfabfe04dc8e9c98385322fbcdcf` |
 | 20 件实物正确率 | 未测量；仓库不声明 80% 已达成 |
 | Jetson 平均 FPS | 未测量；仓库不声明 5 FPS 已达成 |
-| 结果视频 | 未生成 |
+| 结果视频 | Windows DJI 40 秒演示已在本机生成，按要求不上传；Jetson 视频未提交 |
+
+正式训练于 2026-08-31 在 NVIDIA GeForce RTX 4060 Laptop GPU 上完成。最佳权重来自第 93 个 epoch，验证集 `mAP50=0.884`、`mAP50-95=0.695`。独立测试集包含 88 张图片、335 个实例，结果为 `Precision=0.791`、`Recall=0.842`、`mAP50=0.864`、`mAP50-95=0.697`。这些电脑端指标不替代 20 件实物正确率或 Jetson FPS 验收。
+
+Windows DJI 演示视频已在本机录制：40.0 秒、1280×720、15 FPS，画面包含检测框、类别、置信度和完整循环 FPS，并出现键盘与手机同时检测。按本次提交要求，视频文件不上传 GitHub。ROS2 实机发布已由使用者确认成功；仓库没有提交 `topic echo`、话题频率或 Jetson FPS 记录，因此不声明这些数值。
 
 ## 目录
 
@@ -101,6 +105,22 @@ python src/evaluate.py \
 - `results/figures/`：混淆矩阵、PR/F1 曲线等。
 - `results/error_examples/`：典型误检、漏检和类别错误图片。
 - `results/error_cases.csv`：错误案例的可追溯记录。
+
+## Windows 摄像头预览
+
+在训练电脑上连接摄像头后运行：
+
+```powershell
+python src/windows_demo.py --model models/best.pt --camera 0 --device 0
+```
+
+窗口会实时显示类别、检测框、置信度和完整循环 FPS；按 `q` 或 `Esc` 退出。该入口不依赖 ROS2，也不会生成或覆盖正式的 20 件验收记录。若相机 0 无法打开，可依次尝试 `--camera 1`、`--camera 2`。
+
+录制固定 40 秒演示视频：
+
+```powershell
+python src/windows_demo.py --camera 1 --width 1280 --height 720 --duration 40 --save-video results/videos/windows_dji_demo.mp4
+```
 
 ## 20 件实物验收
 

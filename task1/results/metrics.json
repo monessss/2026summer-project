@@ -1,0 +1,61 @@
+{
+  "metrics/precision(B)": 0.7910849235937576,
+  "metrics/recall(B)": 0.8420993986809173,
+  "metrics/mAP50(B)": 0.8641837540368181,
+  "metrics/mAP50-95(B)": 0.697170739826877,
+  "fitness": 0.697170739826877,
+  "speed_ms_per_image": {
+    "preprocess": 0.9672863635718055,
+    "inference": 5.556095454597776,
+    "loss": 0.01096931819946886,
+    "postprocess": 0.30475454538893904
+  },
+  "model": "models/best.pt",
+  "model_sha256": "7ab7a1cf4c08e2eb803d5666a6caa6931256cfabfe04dc8e9c98385322fbcdcf",
+  "data": "configs/data.yaml",
+  "classes": {
+    "0": "keyboard",
+    "1": "nongfu_spring",
+    "2": "phone"
+  },
+  "per_class": {
+    "0": {
+      "name": "keyboard",
+      "instances": 208,
+      "precision": 0.9432720243593343,
+      "recall": 0.8942307692307693,
+      "mAP50": 0.9670782292310829,
+      "mAP50-95": 0.7544804703671064
+    },
+    "1": {
+      "name": "nongfu_spring",
+      "instances": 25,
+      "precision": 0.6105121079442627,
+      "recall": 0.92,
+      "mAP50": 0.8349851641473683,
+      "mAP50-95": 0.7257279005768353
+    },
+    "2": {
+      "name": "phone",
+      "instances": 102,
+      "precision": 0.8194706384776757,
+      "recall": 0.7120674268119828,
+      "mAP50": 0.7904878687320036,
+      "mAP50-95": 0.6113038485366895
+    }
+  },
+  "dataset_fingerprint_sha256": "366ccefb5118171059c4ad824fec05d21e87c98a87925b275d622cc1b60d0681",
+  "evaluation_parameters": {
+    "model": "models\\best.pt",
+    "data": "configs\\data.yaml",
+    "output": "results",
+    "imgsz": 640,
+    "batch": 16,
+    "workers": 4,
+    "device": "0",
+    "conf": 0.25,
+    "nms_iou": 0.7,
+    "match_iou": 0.5,
+    "max_error_images": 12
+  }
+}

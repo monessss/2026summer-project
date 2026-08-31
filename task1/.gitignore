@@ -16,6 +16,10 @@ wandb/
 # absolute paths and should not be committed.
 results/requested_config.json
 
+# evaluate.py copies the selected plots from this intermediate Ultralytics
+# directory into results/figures/test/.
+results/ultralytics_test/
+
 # TensorRT/ONNX files are generated from best.pt on the Jetson.
 *.engine
 *.onnx
@@ -24,3 +28,7 @@ results/requested_config.json
 # enough for GitHub. Use Git LFS or a Release for large files.
 results/videos/*.avi
 results/videos/*.mkv
+
+# The user keeps the Windows DJI preview and its sidecar locally for now.
+results/videos/windows_dji_demo.mp4
+results/videos/windows_dji_demo.json

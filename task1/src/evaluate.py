@@ -46,6 +46,33 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def extract_per_class_metrics(metrics: Any, class_names: dict[int, str]) -> dict[str, Any]:
+    """Return JSON-serializable per-class box metrics from Ultralytics results."""
+    box_metrics = getattr(metrics, "box", None)
+    if box_metrics is None:
+        return {}
+
+    class_indices = [int(value) for value in box_metrics.ap_class_index.tolist()]
+    precision = box_metrics.p.tolist()
+    recall = box_metrics.r.tolist()
+    map50 = box_metrics.ap50.tolist()
+    map50_95 = box_metrics.maps.tolist()
+    instances = getattr(metrics, "nt_per_class", None)
+    instance_counts = instances.tolist() if instances is not None else []
+
+    per_class: dict[str, Any] = {}
+    for position, class_id in enumerate(class_indices):
+        per_class[str(class_id)] = {
+            "name": class_names[class_id],
+            "instances": int(instance_counts[class_id]) if class_id < len(instance_counts) else None,
+            "precision": float(precision[position]),
+            "recall": float(recall[position]),
+            "mAP50": float(map50[position]),
+            "mAP50-95": float(map50_95[class_id]),
+        }
+    return per_class
+
+
 def box_iou(first: Box, second: Box) -> float:
     x1 = max(first[0], second[0])
     y1 = max(first[1], second[1])
@@ -349,6 +376,7 @@ def main() -> int:
     metric_values["model_sha256"] = sha256_file(model_path)
     metric_values["data"] = portable_path(data_yaml)
     metric_values["classes"] = data["names"]
+    metric_values["per_class"] = extract_per_class_metrics(metrics, data["names"])
     metric_values["dataset_fingerprint_sha256"] = dataset_report[
         "dataset_fingerprint_sha256"
     ]

@@ -1,0 +1,139 @@
+{
+  "test_images": 88,
+  "images_with_errors": 64,
+  "saved_error_images": 12,
+  "rows": [
+    {
+      "rank": 1,
+      "image": "old__phone__DJI_20260826132514_0194_D_007_jpg.rf.qWuOvihE9MwuE3nVSnWZ.jpg",
+      "error_score": 7,
+      "false_positives": 1,
+      "false_negatives": 3,
+      "wrong_class": 0,
+      "ground_truth_count": 4,
+      "prediction_count": 2,
+      "output": "results\\error_examples\\01_old__phone__DJI_20260826132514_0194_D_007_jpg.rf.qWuOvihE9MwuE3nVSnWZ.jpg"
+    },
+    {
+      "rank": 2,
+      "image": "old__phone__DJI_20260826132451_0191_D_006_jpg.rf.5V2Wpw30ZE6J9gcY3tfY.jpg",
+      "error_score": 6,
+      "false_positives": 2,
+      "false_negatives": 2,
+      "wrong_class": 0,
+      "ground_truth_count": 5,
+      "prediction_count": 5,
+      "output": "results\\error_examples\\02_old__phone__DJI_20260826132451_0191_D_006_jpg.rf.5V2Wpw30ZE6J9gcY3tfY.jpg"
+    },
+    {
+      "rank": 3,
+      "image": "old__phone__DJI_20260826132455_0192_D_003_jpg.rf.g6WXIoxfvYbG2czbk3If.jpg",
+      "error_score": 6,
+      "false_positives": 2,
+      "false_negatives": 2,
+      "wrong_class": 0,
+      "ground_truth_count": 5,
+      "prediction_count": 5,
+      "output": "results\\error_examples\\03_old__phone__DJI_20260826132455_0192_D_003_jpg.rf.g6WXIoxfvYbG2czbk3If.jpg"
+    },
+    {
+      "rank": 4,
+      "image": "old__phone__DJI_20260826132514_0194_D_002_jpg.rf.sCOXSNJpJRmO4SxhkDGK.jpg",
+      "error_score": 6,
+      "false_positives": 2,
+      "false_negatives": 2,
+      "wrong_class": 0,
+      "ground_truth_count": 4,
+      "prediction_count": 4,
+      "output": "results\\error_examples\\04_old__phone__DJI_20260826132514_0194_D_002_jpg.rf.sCOXSNJpJRmO4SxhkDGK.jpg"
+    },
+    {
+      "rank": 5,
+      "image": "old__phone__DJI_20260826132455_0192_D_004_jpg.rf.rkUKJlPdUS8cs4yzzb0v.jpg",
+      "error_score": 5,
+      "false_positives": 3,
+      "false_negatives": 1,
+      "wrong_class": 0,
+      "ground_truth_count": 4,
+      "prediction_count": 6,
+      "output": "results\\error_examples\\05_old__phone__DJI_20260826132455_0192_D_004_jpg.rf.rkUKJlPdUS8cs4yzzb0v.jpg"
+    },
+    {
+      "rank": 6,
+      "image": "old__phone__DJI_20260826132514_0194_D_004_jpg.rf.95uKK7kOEoVwo8VZHEZz.jpg",
+      "error_score": 5,
+      "false_positives": 1,
+      "false_negatives": 2,
+      "wrong_class": 0,
+      "ground_truth_count": 5,
+      "prediction_count": 4,
+      "output": "results\\error_examples\\06_old__phone__DJI_20260826132514_0194_D_004_jpg.rf.95uKK7kOEoVwo8VZHEZz.jpg"
+    },
+    {
+      "rank": 7,
+      "image": "old__phone__DJI_20260826132514_0194_D_008_jpg.rf.tKjS40odxDaDRVVkTK1f.jpg",
+      "error_score": 5,
+      "false_positives": 3,
+      "false_negatives": 1,
+      "wrong_class": 0,
+      "ground_truth_count": 4,
+      "prediction_count": 6,
+      "output": "results\\error_examples\\07_old__phone__DJI_20260826132514_0194_D_008_jpg.rf.tKjS40odxDaDRVVkTK1f.jpg"
+    },
+    {
+      "rank": 8,
+      "image": "old__phone__DJI_20260826132514_0194_D_009_jpg.rf.LAuaVexDB0RrjK581KIK.jpg",
+      "error_score": 5,
+      "false_positives": 1,
+      "false_negatives": 2,
+      "wrong_class": 0,
+      "ground_truth_count": 4,
+      "prediction_count": 3,
+      "output": "results\\error_examples\\08_old__phone__DJI_20260826132514_0194_D_009_jpg.rf.LAuaVexDB0RrjK581KIK.jpg"
+    },
+    {
+      "rank": 9,
+      "image": "nongfu__DJI_20260828143200_0240_D_002_jpg.rf.Bc1BxqNDuoJQnvFufx8w.jpg",
+      "error_score": 4,
+      "false_positives": 0,
+      "false_negatives": 2,
+      "wrong_class": 0,
+      "ground_truth_count": 4,
+      "prediction_count": 2,
+      "output": "results\\error_examples\\09_nongfu__DJI_20260828143200_0240_D_002_jpg.rf.Bc1BxqNDuoJQnvFufx8w.jpg"
+    },
+    {
+      "rank": 10,
+      "image": "old__phone__DJI_20260826132451_0191_D_005_jpg.rf.DvZdGlfwMd3ErtVSq9Vw.jpg",
+      "error_score": 4,
+      "false_positives": 2,
+      "false_negatives": 1,
+      "wrong_class": 0,
+      "ground_truth_count": 4,
+      "prediction_count": 5,
+      "output": "results\\error_examples\\10_old__phone__DJI_20260826132451_0191_D_005_jpg.rf.DvZdGlfwMd3ErtVSq9Vw.jpg"
+    },
+    {
+      "rank": 11,
+      "image": "old__phone__DJI_20260826132529_0196_D_002_jpg.rf.pwOqUB3yWTIrupcufDw2.jpg",
+      "error_score": 4,
+      "false_positives": 4,
+      "false_negatives": 0,
+      "wrong_class": 0,
+      "ground_truth_count": 4,
+      "prediction_count": 8,
+      "output": "results\\error_examples\\11_old__phone__DJI_20260826132529_0196_D_002_jpg.rf.pwOqUB3yWTIrupcufDw2.jpg"
+    },
+    {
+      "rank": 12,
+      "image": "old__phone__DJI_20260826132529_0196_D_005_jpg.rf.wFoUxLVKwzbmWItoO62c.jpg",
+      "error_score": 4,
+      "false_positives": 4,
+      "false_negatives": 0,
+      "wrong_class": 0,
+      "ground_truth_count": 4,
+      "prediction_count": 8,
+      "output": "results\\error_examples\\12_old__phone__DJI_20260826132529_0196_D_005_jpg.rf.wFoUxLVKwzbmWItoO62c.jpg"
+    }
+  ]
+}
