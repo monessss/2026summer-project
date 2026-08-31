@@ -1,12 +1,12 @@
 
 # 实验一：目标检测与识别
 
-本项目使用 Ultralytics YOLO 训练轻量级桌面物体检测模型，并在 Jetson 上实时显示类别、检测框、置信度和 FPS，同时通过 ROS2 发布结构化检测结果。
+本项目使用 Ultralytics YOLO26n 训练轻量级桌面物体检测模型，并在 Jetson 上实时显示类别、检测框、置信度和 FPS，同时通过 ROS2 发布结构化检测结果。选择 Nano 版本是为了兼顾三类物体的检测精度和 Jetson 上不低于 5 FPS 的实时性要求。
 
 ## 验收进度
 
-- [x] 建立不少于 2 类物体的数据和训练接口（默认为 `keyboard`、`nongfu_spring`、`phone`）
-- [ ] 放入实际采集并标注的数据集
+- [x] 建立不少于 2 类物体的数据和训练接口（`keyboard`、`nongfu_spring`、`phone`）
+- [x] 导入 596 张实际采集并标注的数据（train/val/test = 428/73/95）
 - [x] 数据集完整性、标签合法性和跨集重复检查程序
 - [x] YOLO 迁移学习程序和可复现训练配置
 - [x] 完整测试集指标、曲线和典型错误样例保存程序
@@ -38,7 +38,9 @@ task1/
 
 ## 数据集
 
-将数据按标准 YOLO Detection 格式放入：
+当前数据来自 [`boff868/2026Summer-integrated-robot-grouptask/dataset_self`](https://github.com/boff868/2026Summer-integrated-robot-grouptask/tree/main/dataset_self)，固定在源仓库提交 `d06626c71780a5c0a8283d76d09e7b90d0238680`。源数据的 `valid` 目录在导入时规范为本项目的 `val`；除 1 个舍入导致的微小越界框经过可追溯修正外，其余图片和标签内容不变。详细来源、数量、修正和授权信息见 [`data/README.md`](data/README.md)。
+
+数据已按标准 YOLO Detection 格式放入：
 
 ```text
 data/
@@ -52,7 +54,7 @@ data/
 class_id x_center y_center width height
 ```
 
-数据描述和类别编号见 [`configs/data.yaml`](configs/data.yaml) 和 [`data/README.md`](data/README.md)。
+数据描述和类别编号见 [`configs/data.yaml`](configs/data.yaml) 和 [`data/README.md`](data/README.md)。训练默认从 COCO 预训练权重 `yolo26n.pt` 迁移学习，而不是从零开始训练。
 
 ## 训练电脑运行
 

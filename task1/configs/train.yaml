@@ -1,8 +1,9 @@
-# Reproducible training configuration for Ultralytics YOLO.
-model: yolov8n.pt
+# Reproducible training configuration for Ultralytics YOLO26.
+# Nano is selected for the Jetson >=5 FPS acceptance target.
+model: yolo26n.pt
 data: configs/data.yaml
 project: runs
-name: task1_yolov8n
+name: task1_yolo26n
 
 epochs: 100
 batch: 16
