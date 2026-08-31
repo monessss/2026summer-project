@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Ultralytics caches and local experiment runs.
+*.cache
+runs/
+wandb/
+
+# TensorRT/ONNX files are generated from best.pt on the Jetson.
+*.engine
+*.onnx
+
+# Keep the submitted model and selected result video only when they are small
+# enough for GitHub. Use Git LFS or a Release for large files.
+results/videos/*.avi
+results/videos/*.mkv

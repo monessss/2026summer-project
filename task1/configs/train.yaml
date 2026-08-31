@@ -1,0 +1,37 @@
+# Reproducible training configuration for Ultralytics YOLO.
+model: yolov8n.pt
+data: configs/data.yaml
+project: runs
+name: task1_yolov8n
+
+epochs: 100
+batch: 16
+imgsz: 640
+device: 0
+workers: 4
+
+optimizer: auto
+patience: 30
+seed: 42
+deterministic: true
+amp: true
+cache: false
+plots: true
+save: true
+save_period: -1
+rect: false
+
+degrees: 7.0
+translate: 0.08
+scale: 0.30
+shear: 2.0
+perspective: 0.0005
+fliplr: 0.5
+flipud: 0.0
+hsv_h: 0.015
+hsv_s: 0.50
+hsv_v: 0.40
+mosaic: 0.50
+mixup: 0.0
+copy_paste: 0.0
+close_mosaic: 10

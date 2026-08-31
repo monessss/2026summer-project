@@ -1,0 +1,11 @@
+# YOLO detection dataset. Paths are relative to this YAML file.
+path: ../data
+train: images/train
+val: images/val
+test: images/test
+
+nc: 3
+names:
+  0: keyboard
+  1: nongfu_spring
+  2: phone
