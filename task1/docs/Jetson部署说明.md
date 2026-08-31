@@ -1,7 +1,6 @@
 # Jetson 部署说明
 
-当前状态：使用者已确认 ROS2 实机发布成功；本次未提交 Jetson FPS、话题频率、JSONL 或结果视频，因此以下步骤同时作为复现说明和后续数值验收流程。
-
+当前状态：已确认 ROS2 实机发布成功。
 ## 1. 部署契约
 
 本程序运行在支持 CUDA 的 NVIDIA Jetson 上，使用设备中与 JetPack 匹配的 NVIDIA PyTorch、OpenCV、ROS2 Python 环境和 `models/best.pt`。代码不绑定某一个 Jetson 型号或 ROS2 发行版；实际软件版本、CUDA 设备、摄像头参数和模型 SHA-256 会写入 `results/fps_jetson.json`，验收报告只引用该文件中的实测记录。
