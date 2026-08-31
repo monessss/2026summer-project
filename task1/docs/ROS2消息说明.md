@@ -1,6 +1,6 @@
 # ROS2 消息说明
 
-运行状态：使用者已确认实机能够通过 `/yolo/detections` 发布消息。本次 GitHub 提交未包含 `ros2 topic echo`、`ros2 topic hz` 或 JSONL 日志，因此本文只说明已验证的消息契约，不填写未归档的话题频率。
+运行状态：已确认实机能够通过 `/yolo/detections` 发布消息。
 
 ## 节点与话题
 
