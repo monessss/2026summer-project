@@ -1,0 +1,68 @@
+{
+  "data_yaml": "configs/data.yaml",
+  "classes": {
+    "0": "keyboard",
+    "1": "nongfu_spring",
+    "2": "phone"
+  },
+  "splits": {
+    "train": {
+      "images": 433,
+      "instances": 1330,
+      "class_counts": {
+        "keyboard": 772,
+        "nongfu_spring": 248,
+        "phone": 310
+      },
+      "missing_labels": 0,
+      "empty_labels": 0,
+      "orphan_labels": 0,
+      "invalid_rows": 0,
+      "unreadable_images": 0,
+      "unreadable_labels": 0,
+      "images_dir": "data/images/train",
+      "labels_dir": "data/labels/train"
+    },
+    "val": {
+      "images": 75,
+      "instances": 315,
+      "class_counts": {
+        "keyboard": 174,
+        "nongfu_spring": 53,
+        "phone": 88
+      },
+      "missing_labels": 0,
+      "empty_labels": 0,
+      "orphan_labels": 0,
+      "invalid_rows": 0,
+      "unreadable_images": 0,
+      "unreadable_labels": 0,
+      "images_dir": "data/images/val",
+      "labels_dir": "data/labels/val"
+    },
+    "test": {
+      "images": 88,
+      "instances": 335,
+      "class_counts": {
+        "keyboard": 208,
+        "nongfu_spring": 25,
+        "phone": 102
+      },
+      "missing_labels": 0,
+      "empty_labels": 0,
+      "orphan_labels": 0,
+      "invalid_rows": 0,
+      "unreadable_images": 0,
+      "unreadable_labels": 0,
+      "images_dir": "data/images/test",
+      "labels_dir": "data/labels/test"
+    }
+  },
+  "duplicate_groups": [],
+  "capture_group_count": 74,
+  "cross_split_capture_groups": [],
+  "dataset_fingerprint_sha256": "366ccefb5118171059c4ad824fec05d21e87c98a87925b275d622cc1b60d0681",
+  "errors": [],
+  "warnings": [],
+  "valid": true
+}

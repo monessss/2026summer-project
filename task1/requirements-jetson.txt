@@ -1,5 +1,6 @@
-# Install the NVIDIA PyTorch wheel matching the JetPack version first.
+# Provide the NVIDIA PyTorch/torchvision build matching the JetPack version first.
 # rclpy and std_msgs are installed through the selected ROS 2 distribution.
-ultralytics>=8.4.0,<9
-numpy>=1.24
-PyYAML>=6.0
+ultralytics==8.4.135
+opencv-python==4.11.0.86
+numpy==1.24.4
+PyYAML==6.0.2

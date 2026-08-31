@@ -11,7 +11,15 @@ imgsz: 640
 device: 0
 workers: 4
 
-optimizer: auto
+optimizer: AdamW
+lr0: 0.001
+lrf: 0.01
+momentum: 0.90
+weight_decay: 0.0005
+warmup_epochs: 3.0
+warmup_momentum: 0.80
+warmup_bias_lr: 0.10
+cos_lr: true
 patience: 30
 seed: 42
 deterministic: true

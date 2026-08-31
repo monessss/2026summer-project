@@ -9,12 +9,18 @@ import shutil
 from pathlib import Path
 from typing import Any, Tuple
 
+from check_dataset import inspect_dataset, print_report
 from common import (
     PROJECT_ROOT,
+    decode_image,
+    encode_image,
     image_files,
     labels_directory,
+    portable_path,
+    require_ascii_project_path_on_windows,
     resolve_dataset,
     resolve_project_path,
+    sha256_file,
     write_json,
 )
 
@@ -150,18 +156,20 @@ def save_error_examples(
     labels_dir = labels_directory(test_images_dir)
     error_dir = output_dir / "error_examples"
     error_dir.mkdir(parents=True, exist_ok=True)
+    for stale_image in error_dir.glob("*.jpg"):
+        stale_image.unlink()
     candidates: list[dict[str, Any]] = []
 
     test_images = image_files(test_images_dir)
     for image_number, image_path in enumerate(test_images, start=1):
-        image = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
+        image = decode_image(image_path)
         if image is None:
             print(f"[WARNING] Cannot read {image_path}")
             continue
         height, width = image.shape[:2]
         ground_truth = read_ground_truth(labels_dir / f"{image_path.stem}.txt", width, height)
         result = model.predict(
-            source=str(image_path),
+            source=image,
             imgsz=args.imgsz,
             conf=args.conf,
             iou=args.nms_iou,
@@ -229,7 +237,8 @@ def save_error_examples(
         cv2.rectangle(canvas, (0, 0), (canvas.shape[1], 28), (35, 35, 35), -1)
         cv2.putText(canvas, header, (8, 19), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
         output_path = error_dir / f"{rank:02d}_{candidate['image_path'].stem}.jpg"
-        cv2.imwrite(str(output_path), canvas)
+        if not encode_image(output_path, canvas):
+            raise RuntimeError(f"Cannot save error example: {output_path}")
         rows.append(
             {
                 "rank": rank,
@@ -271,9 +280,12 @@ def save_error_examples(
 
 
 def copy_metric_figures(source_dir: Path, output_dir: Path) -> list[str]:
-    figures_dir = output_dir / "figures"
+    figures_dir = output_dir / "figures" / "test"
     figures_dir.mkdir(parents=True, exist_ok=True)
     patterns = ("*.png", "*.jpg")
+    for pattern in patterns:
+        for stale_figure in figures_dir.glob(pattern):
+            stale_figure.unlink()
     copied: list[str] = []
     for pattern in patterns:
         for source in source_dir.glob(pattern):
@@ -291,7 +303,13 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
     if not model_path.is_file():
         raise FileNotFoundError(f"Model does not exist: {model_path}")
+    require_ascii_project_path_on_windows()
     data, split_paths = resolve_dataset(data_yaml)
+    dataset_report = inspect_dataset(data_yaml)
+    print_report(dataset_report)
+    write_json(output_dir / "dataset_report.json", dataset_report)
+    if not dataset_report["valid"]:
+        raise RuntimeError("Dataset validation failed; evaluation was not started")
 
     try:
         from ultralytics import YOLO
@@ -299,6 +317,14 @@ def main() -> int:
         raise RuntimeError("Install dependencies with: pip install -r requirements-train.txt") from exc
 
     model = YOLO(str(model_path))
+    model_class_names = {int(index): str(name) for index, name in model.names.items()}
+    if model_class_names != data["names"]:
+        raise ValueError(
+            f"Model classes {model_class_names} do not match dataset classes {data['names']}"
+        )
+    evaluation_run_dir = output_dir / "ultralytics_test"
+    if evaluation_run_dir.is_dir():
+        shutil.rmtree(evaluation_run_dir)
     metrics = model.val(
         data=str(data_yaml),
         split="test",
@@ -319,12 +345,17 @@ def main() -> int:
         except (TypeError, ValueError):
             metric_values[key] = str(value)
     metric_values["speed_ms_per_image"] = getattr(metrics, "speed", {})
-    metric_values["model"] = str(model_path)
-    metric_values["data"] = str(data_yaml)
+    metric_values["model"] = portable_path(model_path)
+    metric_values["model_sha256"] = sha256_file(model_path)
+    metric_values["data"] = portable_path(data_yaml)
     metric_values["classes"] = data["names"]
+    metric_values["dataset_fingerprint_sha256"] = dataset_report[
+        "dataset_fingerprint_sha256"
+    ]
+    metric_values["evaluation_parameters"] = vars(args)
     write_json(output_dir / "metrics.json", metric_values)
 
-    evaluation_dir = Path(getattr(metrics, "save_dir", output_dir / "ultralytics_test"))
+    evaluation_dir = Path(getattr(metrics, "save_dir", evaluation_run_dir))
     copied_figures = copy_metric_figures(evaluation_dir, output_dir)
     error_summary = save_error_examples(
         model=model,

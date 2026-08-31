@@ -12,9 +12,8 @@ venv/
 runs/
 wandb/
 
-# Recreated locally by dataset checks and training dry-runs. These files contain
-# machine-specific absolute paths and should not be committed.
-results/dataset_report.json
+# Recreated locally by training dry-runs. This file contains machine-specific
+# absolute paths and should not be committed.
 results/requested_config.json
 
 # TensorRT/ONNX files are generated from best.pt on the Jetson.

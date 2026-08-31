@@ -2,8 +2,8 @@
 
 ## 节点与话题
 
-- 默认节点：`task1_yolo_detector`
-- 默认话题：`/yolo/detections`
+- 节点名称：`task1_yolo_detector`
+- 话题名称：`/yolo/detections`
 - 消息类型：`std_msgs/msg/String`
 - QoS 队列深度：10
 - 编码：UTF-8 JSON
@@ -48,4 +48,4 @@ ros2 topic echo /yolo/detections
 ros2 topic hz /yolo/detections
 ```
 
-本实验为了便于验收使用 JSON。如果后续用于更大 ROS2 系统，建议改用 `vision_msgs/msg/Detection2DArray` 或自定义强类型消息。
+本实验固定使用 `std_msgs/msg/String` 承载 UTF-8 JSON；验收端按上表字段解析。

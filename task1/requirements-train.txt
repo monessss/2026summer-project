@@ -1,5 +1,7 @@
-ultralytics>=8.4.0,<9
-opencv-python>=4.8
-numpy>=1.24
-PyYAML>=6.0
-matplotlib>=3.7
+# Install the PyTorch build matching the training computer's NVIDIA driver first.
+# train.py records the exact PyTorch, CUDA and GPU versions in model_info.json.
+ultralytics==8.4.135
+opencv-python==4.11.0.86
+numpy==1.24.4
+PyYAML==6.0.2
+matplotlib==3.10.8

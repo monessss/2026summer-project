@@ -1,0 +1,10 @@
+*.py text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+requirements*.txt text eol=lf
+
+# Dataset labels use a fixed LF line ending on every operating system.
+data/labels/**/*.txt text eol=lf
+data/images/** -text

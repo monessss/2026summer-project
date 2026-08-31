@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +30,53 @@ def resolve_project_path(value: str | Path) -> Path:
     """Resolve a path relative to the task1 project root."""
     path = Path(value).expanduser()
     return path.resolve() if path.is_absolute() else (PROJECT_ROOT / path).resolve()
+
+
+def portable_path(path: str | Path) -> str:
+    """Return a project-relative POSIX path when the target is inside task1."""
+    resolved = Path(path).resolve()
+    try:
+        return resolved.relative_to(PROJECT_ROOT).as_posix()
+    except ValueError:
+        return str(resolved)
+
+
+def require_ascii_project_path_on_windows() -> None:
+    """Fail early when a Windows path would break third-party image loaders."""
+    if os.name == "nt":
+        try:
+            str(PROJECT_ROOT).encode("ascii")
+        except UnicodeEncodeError as exc:
+            raise RuntimeError(
+                "Formal Ultralytics training/evaluation on Windows requires an ASCII-only path. "
+                "Clone the repository to C:\\yolo\\2026summer-project and run it there."
+            ) from exc
+
+
+def decode_image(path: Path) -> Any:
+    """Decode an image from bytes so non-ASCII Windows paths work reliably."""
+    import cv2
+    import numpy as np
+
+    try:
+        encoded_image = np.fromfile(str(path), dtype=np.uint8)
+        return cv2.imdecode(encoded_image, cv2.IMREAD_COLOR)
+    except (OSError, ValueError):
+        return None
+
+
+def encode_image(path: Path, image: Any) -> bool:
+    """Encode and save an image through bytes for non-ASCII Windows paths."""
+    import cv2
+
+    success, encoded_image = cv2.imencode(path.suffix, image)
+    if not success:
+        return False
+    try:
+        encoded_image.tofile(str(path))
+    except OSError:
+        return False
+    return True
 
 
 def resolve_dataset(data_yaml: Path) -> tuple[dict[str, Any], dict[str, Path]]:
@@ -65,6 +113,8 @@ def resolve_dataset(data_yaml: Path) -> tuple[dict[str, Any], dict[str, Path]]:
         raise ValueError(f"nc={declared_nc}, but {len(names)} class names are defined")
     if set(names) != set(range(declared_nc)):
         raise ValueError("Class IDs must be consecutive integers beginning at 0")
+    if len(set(names.values())) != len(names):
+        raise ValueError("Class names must be unique")
     return data, split_paths
 
 
@@ -98,7 +148,7 @@ def sha256_file(path: Path) -> str:
 
 
 def write_json(path: Path, value: Any) -> None:
-    """Write human-readable UTF-8 JSON atomically enough for experiment logs."""
+    """Write human-readable UTF-8 JSON for experiment logs."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(value, ensure_ascii=False, indent=2, default=str) + "\n",

@@ -3,21 +3,18 @@
 
 本项目使用 Ultralytics YOLO26n 训练轻量级桌面物体检测模型，并在 Jetson 上实时显示类别、检测框、置信度和 FPS，同时通过 ROS2 发布结构化检测结果。选择 Nano 版本是为了兼顾三类物体的检测精度和 Jetson 上不低于 5 FPS 的实时性要求。
 
-## 验收进度
+## 当前状态
 
-- [x] 建立不少于 2 类物体的数据和训练接口（`keyboard`、`nongfu_spring`、`phone`）
-- [x] 导入 596 张实际采集并标注的数据（train/val/test = 428/73/95）
-- [x] 数据集完整性、标签合法性和跨集重复检查程序
-- [x] YOLO 迁移学习程序和可复现训练配置
-- [x] 完整测试集指标、曲线和典型错误样例保存程序
-- [x] 20 件实物交互式验收程序
-- [x] Jetson 实时检测、视频保存和 ROS2 发布程序
-- [ ] 添加训练后的 `models/best.pt`
-- [ ] 完成 20 件实物测试，正确率达到 80% 以上
-- [ ] 在 Jetson 实测完整检测速度，平均 FPS 达到 5 以上
-- [ ] 添加结果视频和完成后的实验报告
-
-> 未打勾项目需要实际数据集、训练权重或 Jetson 实测结果，不在仓库中伪造数值。
+| 项目 | 状态 |
+|---|---|
+| 三类数据集及严格审计 | 已完成并通过 |
+| YOLO26n 训练、评估和模型发布程序 | 已完成并通过 dry-run |
+| 20 件实物验收程序 | 已完成，固定为 7 个键盘、7 个农夫山泉、6 个手机 |
+| Jetson 检测、视频记录、FPS 统计和 ROS2 发布程序 | 已完成 |
+| `models/best.pt` 与训练指标 | 未生成；本仓库尚未执行正式训练 |
+| 20 件实物正确率 | 未测量；仓库不声明 80% 已达成 |
+| Jetson 平均 FPS | 未测量；仓库不声明 5 FPS 已达成 |
+| 结果视频 | 未生成 |
 
 ## 目录
 
@@ -38,7 +35,7 @@ task1/
 
 ## 数据集
 
-当前数据来自 [`boff868/2026Summer-integrated-robot-grouptask/dataset_self`](https://github.com/boff868/2026Summer-integrated-robot-grouptask/tree/main/dataset_self)，固定在源仓库提交 `d06626c71780a5c0a8283d76d09e7b90d0238680`。源数据的 `valid` 目录在导入时规范为本项目的 `val`；除 1 个舍入导致的微小越界框经过可追溯修正外，其余图片和标签内容不变。详细来源、数量、修正和授权信息见 [`data/README.md`](data/README.md)。
+当前数据来自 [`boff868/2026Summer-integrated-robot-grouptask/dataset_self`](https://github.com/boff868/2026Summer-integrated-robot-grouptask/tree/main/dataset_self)，固定在源仓库提交 `d06626c71780a5c0a8283d76d09e7b90d0238680`。本项目修正 1 个舍入越界框，并将 5 个跨集合的连续拍摄序列归并到单一集合。最终划分为 train 433 张、val 75 张、test 88 张。详细来源、统计和逐项修正记录见 [`data/README.md`](data/README.md)。
 
 数据已按标准 YOLO Detection 格式放入：
 
@@ -54,18 +51,17 @@ data/
 class_id x_center y_center width height
 ```
 
-数据描述和类别编号见 [`configs/data.yaml`](configs/data.yaml) 和 [`data/README.md`](data/README.md)。训练默认从 COCO 预训练权重 `yolo26n.pt` 迁移学习，而不是从零开始训练。
+数据描述和类别编号见 [`configs/data.yaml`](configs/data.yaml) 和 [`data/README.md`](data/README.md)。训练固定从 COCO 预训练权重 `yolo26n.pt` 迁移学习，不从零开始训练。
 
 ## 训练电脑运行
 
-```bash
-cd task1
-python -m venv .venv
-```
+训练环境固定使用 Python 3.10；应用依赖固定在 `requirements-train.txt`。PyTorch 使用与训练电脑 NVIDIA 驱动匹配的官方构建，实际 PyTorch、CUDA、GPU 和 Ultralytics 版本由训练程序写入 `models/model_info.json`。
 
 Linux/macOS：
 
 ```bash
+cd task1
+python3.10 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements-train.txt
 ```
@@ -73,9 +69,13 @@ pip install -r requirements-train.txt
 Windows PowerShell：
 
 ```powershell
+cd C:\yolo\2026summer-project\task1
+py -3.10 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements-train.txt
 ```
+
+Windows 正式训练和 `evaluate.py` 必须从纯 ASCII 路径运行；固定路径为 `C:\yolo\2026summer-project\task1`。这是为了避开第三方图像加载器对中文路径的兼容问题。数据审计脚本本身支持中文路径。
 
 先检查数据，再训练：
 
@@ -105,16 +105,16 @@ python src/evaluate.py \
 ## 20 件实物验收
 
 ```bash
-python src/acceptance_test.py --model models/best.pt --camera 0 --samples 20
+python src/acceptance_test.py --model models/best.pt --camera 0
 ```
 
-窗口中按真实物体的类别编号记录当前样本，例如按 `0` 记录键盘、按 `2` 记录手机。完成 20 件后自动生成：
+每次画面只放置一个待测物体，按真实类别编号记录样本：`0` 为键盘，`1` 为农夫山泉，`2` 为手机。程序固定记录 20 件，配额为 7、7、6；以最高置信度检测的类别作为最终预测。完成后自动生成：
 
 - `results/acceptance_test/test_20_objects.csv`
 - `results/acceptance_test/summary.json`
 - `results/acceptance_test/images/`
 
-只有完成 20 件并且正确率不低于 80% 时，`passed` 才会为 `true`。
+只有三个类别配额全部完成且至少 16 件预测正确时，`passed` 才为 `true`。
 
 ## Jetson + ROS2
 
@@ -127,6 +127,7 @@ python src/jetson_ros2_node.py \
   --imgsz 640 \
   --conf 0.50 \
   --device 0 \
+  --half \
   --topic /yolo/detections \
   --save-video results/videos/jetson_demo.mp4 \
   --save-jsonl results/jetson_detections.jsonl \
@@ -141,7 +142,7 @@ ros2 topic echo /yolo/detections
 ros2 topic hz /yolo/detections
 ```
 
-按 `q` 结束检测。详细的 Jetson 环境、自启动和验收方法见 [`docs/Jetson部署说明.md`](docs/Jetson部署说明.md)。
+程序预热 30 帧后测量 500 帧并自动结束；按 `q` 可提前终止。详细部署和验收方法见 [`docs/Jetson部署说明.md`](docs/Jetson部署说明.md)。
 
 ## 验收证据对照
 

@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import platform
 import shutil
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -13,6 +15,8 @@ from check_dataset import inspect_dataset, print_report
 from common import (
     PROJECT_ROOT,
     load_yaml,
+    portable_path,
+    require_ascii_project_path_on_windows,
     resolve_dataset,
     resolve_project_path,
     sha256_file,
@@ -23,7 +27,6 @@ from common import (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/train.yaml", help="Training YAML relative to task1")
-    parser.add_argument("--skip-data-check", action="store_true", help="Skip the pre-training dataset audit")
     parser.add_argument("--dry-run", action="store_true", help="Validate and print configuration without training")
     return parser.parse_args()
 
@@ -45,12 +48,11 @@ def main() -> int:
 
     data_yaml = resolve_project_path(str(config["data"]))
     data, _split_paths = resolve_dataset(data_yaml)
-    if not args.skip_data_check:
-        dataset_report = inspect_dataset(data_yaml)
-        print_report(dataset_report)
-        write_json(PROJECT_ROOT / "results" / "dataset_report.json", dataset_report)
-        if not dataset_report["valid"]:
-            raise RuntimeError("Dataset validation failed; fix the reported errors before training")
+    dataset_report = inspect_dataset(data_yaml)
+    print_report(dataset_report)
+    write_json(PROJECT_ROOT / "results" / "dataset_report.json", dataset_report)
+    if not dataset_report["valid"]:
+        raise RuntimeError("Dataset validation failed; fix the reported errors before training")
 
     project_dir = resolve_project_path(str(config["project"]))
     run_name = str(config["name"])
@@ -73,7 +75,16 @@ def main() -> int:
         print("Dry run completed; training was not started.")
         return 0
 
+    require_ascii_project_path_on_windows()
+    if planned_run_dir.exists():
+        raise FileExistsError(
+            f"Training run directory already exists: {planned_run_dir}. "
+            "Archive it under a different name before starting the formal run."
+        )
+
     try:
+        import torch
+        import ultralytics
         from ultralytics import YOLO
     except ImportError as exc:
         raise RuntimeError("Install training dependencies with: pip install -r requirements-train.txt") from exc
@@ -86,10 +97,9 @@ def main() -> int:
     write_json(save_dir / "requested_config.json", config)
 
     best_source = Path(getattr(trainer, "best", save_dir / "weights" / "best.pt"))
-    last_source = Path(getattr(trainer, "last", save_dir / "weights" / "last.pt"))
-    selected_source = best_source if best_source.is_file() else last_source
-    if not selected_source.is_file():
-        raise FileNotFoundError(f"Training finished without a checkpoint under {save_dir / 'weights'}")
+    if not best_source.is_file():
+        raise FileNotFoundError(f"Training finished without the best checkpoint: {best_source}")
+    selected_source = best_source
 
     published_model = PROJECT_ROOT / "models" / "best.pt"
     published_model.parent.mkdir(parents=True, exist_ok=True)
@@ -97,7 +107,7 @@ def main() -> int:
         shutil.copy2(selected_source, published_model)
 
     results_dir = PROJECT_ROOT / "results"
-    figures_dir = results_dir / "figures"
+    figures_dir = results_dir / "figures" / "training"
     figures_dir.mkdir(parents=True, exist_ok=True)
     published_artifacts: list[str] = []
     for filename in (
@@ -121,12 +131,24 @@ def main() -> int:
 
     metadata = {
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
-        "source_checkpoint": str(selected_source.resolve()),
-        "published_model": str(published_model.resolve()),
+        "source_checkpoint": portable_path(selected_source),
+        "published_model": portable_path(published_model),
         "sha256": sha256_file(published_model),
-        "run_directory": str(save_dir),
+        "run_directory": portable_path(save_dir),
         "classes": data["names"],
+        "dataset_fingerprint_sha256": dataset_report["dataset_fingerprint_sha256"],
         "training_config": config,
+        "environment": {
+            "platform": platform.platform(),
+            "python": sys.version.split()[0],
+            "ultralytics": ultralytics.__version__,
+            "pytorch": torch.__version__,
+            "cuda_runtime": torch.version.cuda,
+            "cuda_available": torch.cuda.is_available(),
+            "cuda_device": (
+                torch.cuda.get_device_name(0) if torch.cuda.is_available() else "unavailable"
+            ),
+        },
         "published_artifacts": published_artifacts,
     }
     write_json(PROJECT_ROOT / "models" / "model_info.json", metadata)
